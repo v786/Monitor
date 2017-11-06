@@ -1,23 +1,41 @@
+<?php
+$page = $_SERVER['PHP_SELF'];
+$sec = "1";
+?>
 <html>
   <head>
+    <meta http-equiv="refresh" content="<?php echo $sec?>;URL='<?php echo $page?>'">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
 
       function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Seconds', 'Values'],
+          <?php
+            require('config.php');
+            require ('fun.php');
 
-        var jsonData = $.ajax({
-          url: "getData.php",
-          dataType: "json",
-          async: false
-          }).responseText;
+            $query="SELECT second, value from minute";//select query for viewing users.  
+            $run=mysqli_query($dbcon,$query);//here run the sql query.  
+            $a ['cols'][] = ['second', 'value']; 
+            $i = 1;
+            while ($row = mysqli_fetch_assoc($run)) {
+              if($i >1){
+                echo ", ";
+              }
+              $i = $i + 1;
+              echo "[";
+              echo $row['second'].",".$row['value'];
+              echo "]";
+            }
 
-        var data = new google.visualization.DataTable(jsonData);
+          ?>
+        ]);
 
         var options = {
-          title: 'Company Performance',
+          title: 'Air Quality',
           curveType: 'function',
           legend: { position: 'bottom' }
         };
